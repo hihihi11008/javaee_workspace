@@ -3,7 +3,8 @@
 <%@page import="java.sql.*"%>
 <%@include file="/inc/lib.jsp"%>
 <%
-	String notice_id = request.getParameter("notice_id");
+	String notice_id = request.getParameter("notice_id"); 
+	//웹상에서 돌아다니는 숫자는 모두 String이다. 먼저 String으로 받은 다음 int형으로 변환해줘야해
 	NoticeDAO noticeDAO = new NoticeDAO();
 	
 	int result = noticeDAO.delete(Integer.parseInt(notice_id));

@@ -53,46 +53,61 @@ public class BoardContent extends Page{
 		});
 
 		bt_edit.addActionListener((e)->{
-			int notice_id = notice.getNotice_id();
-			
-			Notice notice = new Notice();
-			notice.setAuthor(t_author.getText());
-			notice.setTitle(t_title.getText());
-			notice.setContent(area.getText());
-			notice.setNotice_id(notice_id);
-			
-			 int result = noticeDAO.update(notice);
-			 if(result==0) {
-				 JOptionPane.showMessageDialog(BoardContent.this, "수정실패");
-			 }else {
-				 JOptionPane.showMessageDialog(BoardContent.this, "수정성공");
-				 //갱신좀 시켜줄사람 ... 
-				 BoardList boardList = (BoardList)boardMain.getPages(Pages.valueOf("BoardList").ordinal());
-				 boardList.getList();
-				 boardMain.showPage(Pages.valueOf("BoardList").ordinal());
-			 }
+			//한번 물어보고 수정하자!!!
+			if(JOptionPane.showConfirmDialog(BoardContent.this, "수정하실래요?")==JOptionPane.OK_OPTION) {
+				edit();
+			}
 		});
 		
 		bt_del.addActionListener((e)->{
-			//현재 페이지의 notice_id를 추출해야해 
-			boardList = new BoardList(boardMain);
-			int result = noticeDAO.delete(notice.getNotice_id());
-			
-			if(result==0) {
-				 JOptionPane.showMessageDialog(BoardContent.this, "삭제실패");
-			}else {
-				JOptionPane.showMessageDialog(BoardContent.this, "삭제성공");
-				//리스트 갱신 (알려주세여 ... ㅠ_ㅠ ) 
-				BoardList boardList = (BoardList)boardMain.getPages(Pages.valueOf("BoardList").ordinal());
-				boardList.getList();
-				boardMain.showPage(Pages.valueOf("BoardList").ordinal());
+			if(JOptionPane.showConfirmDialog(BoardContent.this, "삭제하실래요?")==JOptionPane.OK_OPTION) {
+				del();
 			}
 		});
 	}
 	
+	public void edit() {
+		//DAO를 이용하여 수정작업수행 
+		//작성자, 제목 ,내용만 교체 
+		notice.setAuthor(t_author.getText());//새로운 값
+		notice.setTitle(t_title.getText());//새로운 값
+		notice.setContent(area.getText());//새로운 값
+		
+		int result = noticeDAO.update(notice);
+		 if(result==0) {
+			 JOptionPane.showMessageDialog(BoardContent.this, "수정실패");
+		 }else {
+			 JOptionPane.showMessageDialog(BoardContent.this, "수정성공");
+			 //갱신좀 시켜줄사람 ... 
+			 BoardList boardList = (BoardList)boardMain.pageList[Pages.valueOf("BoardList").ordinal()];
+			 boardList.getList();//데이터가져오기 
+			 boardList.table.updateUI();//화면갱신
+			 
+			 boardMain.showPage(Pages.valueOf("BoardList").ordinal());
+		 }
+	}
+	
+	public void del() {
+		//현재 페이지의 notice_id를 추출해야해 
+		
+		int result = noticeDAO.delete(notice.getNotice_id());
+		
+		if(result==0) {
+			 JOptionPane.showMessageDialog(BoardContent.this, "삭제실패");
+		}else {
+			JOptionPane.showMessageDialog(BoardContent.this, "삭제성공");
+			//리스트 갱신 (알려주세여 ... ㅠ_ㅠ ) 
+			BoardList boardList = (BoardList)boardMain.pageList[Pages.valueOf("BoardList").ordinal()];
+			boardList.getList();//데이터가져오기 
+			boardList.table.updateUI();//화면갱신
+			
+			boardMain.showPage(Pages.valueOf("BoardList").ordinal());
+		}
+	}
+	
 	//컴포넌트에 데이터 채워넣기 
 	//이메서드를 호출하는 자는 1건의 데이터를 vo에 담아서 호출하면된다 
-	public void setData(Notice notice) {
+	public void setData(Notice notice) {//VO
 		this.notice = notice; //나중에 써먹을 거 대비해서 보관해놓음 
 		
 		t_author.setText(notice.getAuthor());
