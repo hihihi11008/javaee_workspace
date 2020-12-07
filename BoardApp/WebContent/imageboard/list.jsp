@@ -1,12 +1,16 @@
-<%@page import="board.model.ImageBoard"%>
 <%@page import="board.model.ImageBoardDAO"%>
-<%@ page contentType="text/html;charset=utf-8"%>
+<%@page import="board.model.ImageBoard"%>
+<%@page import="board.model.Notice"%>
 <%@page import="java.util.ArrayList"%>
-
+<%@page import="board.model.NoticeDAO"%>
+<%@ page contentType="text/html;charset=utf-8"%>
+<%@ page import="db.DBManager"%>
+<%@ page import="java.sql.Connection"%>
+<%@ page import="java.sql.PreparedStatement"%>
+<%@ page import="java.sql.ResultSet"%>
 <%
-	ImageBoardDAO dao = new ImageBoardDAO();
-	ArrayList<ImageBoard> list= dao.selectAll();
-	
+	ImageBoardDAO boardDAO = new ImageBoardDAO();
+	ArrayList<ImageBoard> list = boardDAO.selectAll();
 %>
 <!DOCTYPE html>
 <html>
@@ -32,7 +36,7 @@ tr:nth-child(even) {
 $(function(){
 	$("button").on("click",function(){
 		//자바스크립트에서 링크 구현? 
-		location.href="/board/regist_form.jsp";
+		location.href="/imageboard/regist_form.jsp";
 	});
 }); //onload
 </script>
@@ -42,32 +46,33 @@ $(function(){
 <table>
   <tr>
     <th>No</th>
-    <th>사진</th>
+    <th>이미지</th>
     <th>제목</th>
     <th>작성자</th>
 	<th>등록일</th>
 	<th>조회수</th>
   </tr>
-  <%for(int i=0; i<list.size(); i++){%>
-  <%ImageBoard board=list.get(i);//각칸에 들어간 vo 끄집어 내기 %>
+
+	<%for(int i=0;i<list.size();i++){%>
+	<%ImageBoard board=list.get(i); //각 칸에 들어간 vo 끄집어 내기%>
   <tr>
     <td><%=board.getBoard_id()%></td>
-    <td><%=board.getFilename()%></td>
+    <td><img src="/data/<%=board.getFilename() %>" width="50px"></td>
     <td>
-		<a href="/board/detail.jsp?notice_id=<%=board.getBoard_id()%>"><%=board.getTitle()%></a>
+		<a href="/imageboard/detail.jsp?board_id=<%=board.getBoard_id()%>"><%=board.getTitle()%></a>
 	</td>
-    <td><%=board.getAuthor()%></td>
+    <td><%= board.getAuthor()%></td>
 	<td><%=board.getRegdate()%></td>
 	<td><%=board.getHit()%></td>
   </tr>
-<%}%>
+	<%}%>
   <tr>
-	<td colspan="5" > 
+	<td colspan="6" > 
 		<button>글등록</button>
 	</td>
   </tr>
   <tr>
-	<td colspan="5" style="text-align:center"> 
+	<td colspan="6" style="text-align:center"> 
 		<%@ include file="/inc/footer.jsp"%>
 	</td>
   </tr>
