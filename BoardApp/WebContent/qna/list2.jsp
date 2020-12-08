@@ -1,14 +1,11 @@
-<%@page import="java.util.List"%>
 <%@page import="board.model.QnA"%>
+<%@page import="java.util.List"%>
 <%@page import="board.model.QnADAO"%>
 <%@ page contentType="text/html;charset=utf-8"%>
-<%@page import="java.util.ArrayList"%>
-<%@page import="board.model.NoticeDAO"%>
-<%@page import="board.model.Notice"%>
-
 <%
-	QnADAO qnaDAO= new QnADAO();
-	List<QnA> list= qnaDAO.selectAll();
+	//DB연동
+	QnADAO dao = new QnADAO();
+	List<QnA> list = dao.selectAll();
 	
 	int totalRecord=list.size(); //총 레코드 수 , 실제 DB에 있는 데이터 수를 대입하면 된다 
 	int pageSize=10; //한 페이지당 보여질 레코드 수 
@@ -25,10 +22,19 @@
 	int num=totalRecord-(currentPage-1)*pageSize;//페이지당 시작 번호 (힌트 : 여전히 위에있는 변수이용)
 	int curPos=(currentPage-1)*pageSize;//페이지당 List에서의 시작 index 
 %>
+<%="totalRecord "+totalRecord+"<br>" %>
+<%="pageSize "+pageSize+"<br>" %>
+<%="totalPage "+totalPage+"<br>" %>
+<%="blockSize "+blockSize+"<br>" %>
+<%="currentPage "+currentPage+"<br>" %>
+<%="firstPage "+firstPage+"<br>" %>
+<%="lastPage "+lastPage+"<br>" %>
+<%="num "+num+"<br>" %>
 <!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="utf-8">
+<title>Insert title here</title>
 <style>
 table {
   border-collapse: collapse;
@@ -44,23 +50,21 @@ tr:nth-child(even) {
   background-color: #f2f2f2;
 }
 img{
-	box-sizing: border-box;
+	box-sizing:border-box;
 }
 a{
-	text-decoration: none;
+	text-decoration:none;
+}
+.pageNum{
+	fnot-size : 20pt;
+	color : red;
+	font-weight: bold;
 }
 </style>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
-$(function(){
-	$("button").on("click",function(){
-		location.href="/qna/regist_form.jsp";
-	});
-});
 </script>
 </head>
 <body>
-
 <table>
   <tr>
     <th>No</th>
@@ -69,7 +73,7 @@ $(function(){
 	<th>등록일</th>
 	<th>조회수</th>
   </tr>
-  	<%for(int i=1;i<=pageSize;i++){ %>
+	<%for(int i=1;i<=pageSize;i++){ %>
 	<%if(num<1)break; %>
 	<%
 		//break문을 만나지 않았다는 것은 레코드가 있다는 것이므로, break문 아래에서 데이터를 추출하자
@@ -78,16 +82,16 @@ $(function(){
   <tr>
     <td><%=num-- %></td>
     <td>
-    <%if(qna.getDepth()>0){//depth가 0보다 큰 경우 답변으로 판단하자 %>
+    	<%if(qna.getDepth()>0){//답변인것만  %>
     	<img src="/images/reply.png" style="margin-left:<%=20*qna.getDepth()%>px">
     	<%} %>
-		<a href="/qna/detail.jsp?qna_id=<%=qna.getQna_id()%>"><%=qna.getTitle()%></a>
-	</td>
-    <td><%=qna.getWriter()%></td>
-	<td><%=qna.getRegdate().substring(0,10)%></td>
+    	<%=qna.getTitle()%>
+    </td>
+    <td><%=qna.getWriter() %></td>
+	<td><%=qna.getRegdate() %></td>
 	<td><%=qna.getHit() %></td>
   </tr>
-<%}%>
+  <%} %>
   <tr>
 	<td colspan="5" style="text-align: center" > 
 		<%if(firstPage-1>=1){ //페이지가 있따면 %>
@@ -118,6 +122,5 @@ $(function(){
   </tr>
 
 </table>
-
 </body>
 </html>

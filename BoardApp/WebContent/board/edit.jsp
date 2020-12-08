@@ -1,8 +1,8 @@
+<%@ page contentType="text/html;charset=utf-8"%>
 <%@page import="board.model.Notice"%>
 <%@page import="board.model.NoticeDAO"%>
-<%@ page contentType="text/html;charset=utf-8"%>
-<%@ page import="db.DBManager"%><%@ page import = "java.sql.*"%>
-
+<%@ page import="db.DBManager"%>
+<%@ page import = "java.sql.*"%>
 <%@ include file="/inc/lib.jsp"%>
 <%
 	NoticeDAO noticeDAO = new NoticeDAO();

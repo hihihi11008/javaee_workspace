@@ -46,10 +46,55 @@ public class QnADAO {
 
 	2.빈공간을 내가차지(답변)
 	insert qna(~team, rank, depth) values(내본글team, 내본글rank+1, 내본글depth+1)
+	
+	트랜잭션이란? 
+	- 세부업무가 모두 성공해야, 전체를 성공으로 간주하는 논리적 업무수행 단위 
 	*/
-	public int reply() {
+	public int reply(QnA qna) {
+		Connection con = null;
+		PreparedStatement pstmt =null;
 		int result=0;
 		
+		con = dbManager.getConnection();
+		
+		
+		
+		try {
+			con.setAutoCommit(false);//자동으로 커밋하지마!! (SQLPlus 처럼 내가 결정할게! ) 
+			
+			String sql = "update qna set rank=rank+1 where team=? and rank > ?";
+			pstmt= con.prepareStatement(sql);
+			pstmt.setInt(1, qna.getTeam());
+			pstmt.setInt(2, qna.getRank());
+			result=pstmt.executeUpdate();
+			
+			sql="insert into qna(writer,title,content,team,rank,depth)"
+					+ " values(?,?,?,?,?,?)";
+			pstmt=con.prepareStatement(sql);
+			pstmt.setString(1, qna.getWriter());
+			pstmt.setString(2, qna.getTitle());
+			pstmt.setString(3, qna.getContent());
+			pstmt.setInt(4, qna.getTeam());
+			pstmt.setInt(5, qna.getRank()+1);//내본글 다음에 위치할 것이므로  +1
+			pstmt.setInt(6, qna.getDepth()+1);//내본글 다음에 위치할 것이므로  +1			
+			result=pstmt.executeUpdate();
+			
+			con.commit(); //여기서 커밋 즉 둘다 에러나지 않고 try를 완료하면 모두 성공으로 간주! 여기서 commit
+		} catch (SQLException e) {
+			e.printStackTrace();
+			try {
+				con.rollback();//두 쿼리문 중 에러가 하나라도 발생하면, 차라리 처음부터 없었던 일로 하자 !
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			} 
+		}finally {
+			try {
+				con.setAutoCommit(true);//원상복귀
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			dbManager.release(con, pstmt);
+		}
 		return result;
 	}
 	
@@ -123,16 +168,50 @@ public class QnADAO {
 	}
 	
 	//update
-	public int update() {
+	public int update(QnA qna) {
+		Connection con = null; 
+		PreparedStatement pstmt=null;
 		int result=0;
 		
+		String sql = "update qna set writer=?, title=?, content=? where qna_id=?";
+		
+		con = dbManager.getConnection();
+		try {
+			pstmt=con.prepareStatement(sql);
+			pstmt.setString(1, qna.getWriter());
+			pstmt.setString(2, qna.getTitle());
+			pstmt.setString(3, qna.getContent());
+			pstmt.setInt(4, qna.getQna_id());
+			
+			result=pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}finally {
+			dbManager.release(con, pstmt);
+		}
 		return result;
 	}
 	
 	//delete
-	public int delete() {
+	public int delete(QnA qna) {
+		Connection con = null;
+		PreparedStatement pstmt = null;
 		int result=0;
 		
+		con = dbManager.getConnection();
+		try {
+			if (qna.getRank()>0) {
+				String sql="delete from qna where qna_id=?";			
+				pstmt = con.prepareStatement(sql);
+				pstmt.setInt(1, qna.getQna_id());
+			}
+			
+			result = pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}finally {
+			dbManager.release(con, pstmt);
+		}
 		return result;
 	}	
 }
