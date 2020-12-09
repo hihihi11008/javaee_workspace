@@ -32,6 +32,7 @@ public class QnADAO {
 			sql="update qna set team=(select last_insert_id()) where qna_id=(select last_insert_id())";
 			pstmt = con.prepareStatement(sql);
 			pstmt.executeUpdate();
+			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}finally {
@@ -200,12 +201,10 @@ public class QnADAO {
 		
 		con = dbManager.getConnection();
 		try {
-			if (qna.getRank()>0) {
-				String sql="delete from qna where qna_id=?";			
-				pstmt = con.prepareStatement(sql);
-				pstmt.setInt(1, qna.getQna_id());
-			}
-			
+			String sql="delete from qna where qna_id=?";			
+			pstmt = con.prepareStatement(sql);
+			pstmt.setInt(1, qna.getQna_id());
+		
 			result = pstmt.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -214,4 +213,27 @@ public class QnADAO {
 		}
 		return result;
 	}	
+	
+	//replace 게시물 지우지 않고 삭제된 게시물이라는 표시 처리 
+	public int  replace(int qna_id) {
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		int result=0;
+		
+		String sql = "update qna set title='삭제됐지유', writer='', hit=-1, content='' where qna_id=?";
+		
+		con=dbManager.getConnection();
+		try {
+			pstmt = con.prepareStatement(sql);
+			pstmt.setInt(1, qna_id);
+			
+			result = pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}finally {
+			dbManager.release(con, pstmt);
+		}
+		return result;
+	}
+	
 }

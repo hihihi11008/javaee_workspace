@@ -76,10 +76,19 @@ $(function(){
 	});
 	$($("input[type='button']")[2]).click(function(){//삭제요청
 		if(confirm("삭제하시겠어요?")){ 
+			<%if(qna.getDepth()>0){%>
+			//댓글이 있다면 
+			$("form").attr({
+				method:"post",
+				action:"/qna/replace.jsp"
+			});
+			<%}else{%>
+			//댓글이 없다면 
 			$("form").attr({
 				method:"post",
 				action:"/qna/delete.jsp"
 			});
+			<%}%>
 			$("form").submit() //전송행위
 		}
 	});
