@@ -82,6 +82,7 @@ function hideColor(obj){
 			<td><%=news.getHit() %></td>
 		</tr>
 		<%} %>
+		
 		<tr>
 			<td colspan="5" align="center">
 				<a href="list.jsp?currentPage=<%=firstPage-1%>">◀</a>
@@ -92,6 +93,7 @@ function hideColor(obj){
 				<a href="list.jsp">▶</a>
 			</td>
 		</tr>
+		
 		<tr>
 			<td colspan="5">
 				<button onclick="location.href='regist_form.jsp';">글쓰기</button>
