@@ -67,21 +67,20 @@ public class BoardDAO {
 		return list;
 	}
 	
-	//한건가져오기
+	//한건 가져오기 
 	public Board select(int board_id) {
 		Connection con=null;
 		PreparedStatement pstmt=null;
 		ResultSet rs=null;
 		Board board=null;
+		String sql="select * from board where board_id=?";
 		
-		String sql ="select * from board where board_id=?";
-		
-		con = pool.getConnection();
+		con=pool.getConnection();//풀로 부터 커넥션 대여!
 		try {
-			pstmt = con.prepareStatement(sql);
-			pstmt.setInt(1, board_id);
-			rs = pstmt.executeQuery();
-			while(rs.next()) {
+			pstmt=con.prepareStatement(sql);
+			pstmt.setInt(1,board_id);
+			rs=pstmt.executeQuery();
+			if(rs.next()) {
 				board = new Board();
 				board.setBoard_id(rs.getInt("board_id"));
 				board.setTitle(rs.getString("title"));
@@ -89,28 +88,27 @@ public class BoardDAO {
 				board.setContent(rs.getString("content"));
 				board.setRegdate(rs.getString("regdate"));
 				board.setHit(rs.getInt("hit"));
-				board.setFilename(rs.getString("filename"));
+				board.setFilename(rs.getString("filename"));			
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
-		}finally {
+		}finally{
 			pool.release(con, pstmt, rs);
-		}		
+		}
 		return board;
 	}
 	
-	//게시물 1건 삭제 
+	//게시물 1건 삭제
 	public int delete(int board_id) {
 		Connection con=null;
 		PreparedStatement pstmt=null;
-		int result =0;
-		String sql = "delete from board where board_id=?";
+		int result=0;
+		String sql="delete from board where board_id=?";
 		
-		con = pool.getConnection();
+		con=pool.getConnection();
 		try {
-			pstmt = con.prepareStatement(sql);
+			pstmt=con.prepareStatement(sql);
 			pstmt.setInt(1, board_id);
-			
 			result=pstmt.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -119,23 +117,23 @@ public class BoardDAO {
 		}
 		return result;
 	}
-	//글1건 수정
+	
+	//글 1건 수정 
 	public int update(Board board) {
 		Connection con=null;
 		PreparedStatement pstmt=null;
-		int result = 0; 
-		String sql ="update board set title=?, writer=?, content=?, filename=? where board_id=?";
+		int result=0;
+		String sql="update board set title=?, writer=?,content=?,filename=? where board_id=?";
 		
-		con = pool.getConnection();
+		con=pool.getConnection();
 		try {
-			pstmt = con.prepareStatement(sql);
+			pstmt=con.prepareStatement(sql);
 			pstmt.setString(1, board.getTitle());
 			pstmt.setString(2, board.getWriter());
 			pstmt.setString(3, board.getContent());
 			pstmt.setString(4, board.getFilename());
 			pstmt.setInt(5, board.getBoard_id());
-			
-			result = pstmt.executeUpdate();
+			result=pstmt.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}finally {
@@ -143,5 +141,4 @@ public class BoardDAO {
 		}
 		return result;
 	}
-	
 }

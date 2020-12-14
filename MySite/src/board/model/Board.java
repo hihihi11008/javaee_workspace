@@ -8,6 +8,7 @@ public class Board {
 	private String regdate;
 	private int hit;
 	private String filename;
+	
 	public int getBoard_id() {
 		return board_id;
 	}

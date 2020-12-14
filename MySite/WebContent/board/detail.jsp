@@ -87,7 +87,7 @@ function del(){
 			<input type="text" name="writer" value="<%=board.getWriter()%>"> 
 			<textarea name="content" style="height: 200px"><%=board.getContent()%></textarea>
 			
-			<input type="file" name="photo">
+			<input type="file" name="photo"><p>
 			<input type="button" value="수정"> 
 			<input type="button" value="삭제"> 
 			<input type="button" value="목록보기" onClick="location.href='list.jsp'">

@@ -65,9 +65,10 @@ function regist(){
 	<h3>글등록 폼</h3>
 	<div class="container">
 		<form>
-			<input type="text" name="writer" placeholder="Your name.."> 
 			<input type="text" name="title" placeholder="Your title..">
+			<input type="text" name="writer" placeholder="Your name.."> 
 			<textarea name="content" placeholder="Write something.." style="height: 200px"></textarea>
+			
 			<input type="file" name="photo"><p>
 			<input type="button" value="글등록"> 
 			<input type="button" value="목록보기" onClick="location.href='list.jsp'">
