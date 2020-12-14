@@ -1,23 +1,14 @@
+<%@page import="board.model.MybatisBoardDAO"%>
+<%@page import="common.board.Pager"%>
 <%@page import="board.model.Board"%>
 <%@page import="java.util.List"%>
 <%@page import="board.model.BoardDAO"%>
 <%@ page contentType="text/html;charset=utf-8"%>
 <%
-	BoardDAO dao = new BoardDAO();
+	MybatisBoardDAO dao = new MybatisBoardDAO();
+	Pager pager = new Pager();
 	List<Board> list = dao.selectAll();
-	
-	int totalRecord =list.size(); //총 레코드 수 
-	int pageSize = 10; //페이지당 보여질 레코드수
-	int totalPage = (int)Math.ceil((float)totalRecord/pageSize); // 총페이지수 
-	int blockSize = 10; //블럭당 보여질 페이지수
-	int currentPage = 1; //현재페이지(default값주기 첫페이지! )
-	if(request.getParameter("currentPage")!=null){//파라미터로 페이지가 전달된다면 
-		currentPage = Integer.parseInt(request.getParameter("currentPage"));
-	}
-	int firstPage = currentPage-(currentPage-1)%blockSize;
-	int lastPage = firstPage+blockSize-1;
-	int curPos=(currentPage-1)*pageSize;
-	int num = totalRecord-curPos;//페이지당 시작번호 
+	pager.init(request,list);//페이지 처리에 대한 계산! 
 
 %>
 <!DOCTYPE html>
@@ -56,27 +47,31 @@ tr:nth-child(even) {
 			<th>등록일</th>
 			<th>조회수</th>
 		</tr>
-		<%for(int i=1; i<=pageSize; i++){ %>
+		<%
+			int num=pager.getNum(); 
+			int curPos=pager.getCurPos();
+		%>
+		<%for(int i=1; i<=pager.getPageSize(); i++){ %>
 		<%if(num<1)break; %>
 		<%Board board =list.get(curPos++); %>
 		<tr>
-			<th><%=num-- %></th>
-			<th>이미지</th>
-			<th>제목</th>
-			<th>작성자</th>
-			<th>등록일</th>
-			<th>조회수</th>
+			<th><%=num--%></th>
+			<th><img src="/data/<%=board.getFilename() %>" width="50px"></th>
+			<th><a href="/board/detail.jsp?board_id=<%=board.getBoard_id()%>"><%=board.getTitle() %></a></th>
+			<th><%=board.getWriter() %></th>
+			<th><%=board.getRegdate() %></th>
+			<th><%=board.getHit() %></th>
 		</tr>
 		<%} %>
 		
 		<tr>
-			<td colspan="3" style="text-align:center">
-				<a href="list.jsp?currentPage=<%=firstPage-1%>">◀</a>
-				<%for(int i =firstPage;i<=lastPage;i++){ %>
-				<%if(i>totalPage)break; %>
-				<a <%if(currentPage==i){ %>class="pageNum" <%} %>href="list.jsp?currentPage=<%=i%>">[<%=i %>]</a>
+			<td colspan="6" style="text-align:center">
+				<a href="list.jsp?currentPage=<%=pager.getFirstPage()-1%>">◀</a>
+				<%for(int i =pager.getFirstPage();i<=pager.getLastPage();i++){ %>
+				<%if(i>pager.getTotalPage())break; %>
+				<a <%if(pager.getCurrentPage()==i){ %>class="pageNum" <%} %>href="list.jsp?currentPage=<%=i%>">[<%=i %>]</a>
 				<%} %>
-				<a href="list.jsp?currentPage=<%=lastPage+1%>">▶</a>
+				<a href="list.jsp?currentPage=<%=pager.getLastPage()+1%>">▶</a>
 			</td>
 		</tr>
 		
